@@ -1,2 +1,3 @@
-# timer
-Atmega 8 timer tools
+1.0.0 (2019.12.XX)
+---------------------
+Initial version.
