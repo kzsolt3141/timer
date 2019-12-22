@@ -5,7 +5,7 @@
  *  Author: Zsolt
  */ 
 
-#include "timer.h"
+#include "timer0.h"
 
 #include "avr/io.h"
 #include "avr/interrupt.h"
@@ -17,7 +17,7 @@ static uint8_t TMR0_INIT_VAL;
 // possible interrupts per second: 30.51 ... 7812.5
 // for 50 interrupts per second: 7812.5 / 50 = 156.25
 // conut to: 256 - 156 = 100 -> set register to 0x64
-void TIMERInit(uint8_t tmr0_init_val)
+void TIMER0Init(uint8_t tmr0_init_val)
 {
     cli();
     TMR0_INIT_VAL = tmr0_init_val;

@@ -6,12 +6,12 @@
  */ 
 
 
-#ifndef TIMERS_H_
-#define TIMERS_H_
+#ifndef TIMER0_H_
+#define TIMER0_H_
 
 #include <stdint.h>
 
-void TIMERInit(uint8_t tmr0_init_val);
+void TIMER0Init(uint8_t tmr0_init_val);
 
 uint16_t TIMER0_interrupt_cnt;
-#endif /* TIMERS_H_ */
+#endif /* TIMER0_H_ */
