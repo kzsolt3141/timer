@@ -9,7 +9,9 @@
 #ifndef TIMERS_H_
 #define TIMERS_H_
 
-void TIMERInit();
+#include <stdint.h>
+
+void TIMERInit(uint8_t tmr0_init_val);
 
 uint16_t TIMER0_interrupt_cnt;
 #endif /* TIMERS_H_ */
