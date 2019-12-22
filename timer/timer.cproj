@@ -130,6 +130,14 @@
       <SubType>compile</SubType>
       <Link>timer0.h</Link>
     </Compile>
+    <Compile Include="..\timer1.c">
+      <SubType>compile</SubType>
+      <Link>timer1.c</Link>
+    </Compile>
+    <Compile Include="..\timer1.h">
+      <SubType>compile</SubType>
+      <Link>timer1.h</Link>
+    </Compile>
     <Compile Include="..\uart\uart.c">
       <SubType>compile</SubType>
       <Link>uart.c</Link>

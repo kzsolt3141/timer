@@ -1,5 +1,5 @@
 /*
- * timer.c
+ * timer0.c
  *
  * Created: 4/15/2017 8:57:43 PM
  *  Author: Zsolt
