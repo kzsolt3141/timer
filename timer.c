@@ -10,13 +10,13 @@
 #include "avr/io.h"
 #include "avr/interrupt.h"
 
-// Example for prescaler calcualtion:
-// max number of interrupts per second F_CPU/prescaler = 8000000/1024 = 7812.5
-// possible interrupts per second: 30.51 ... 7812.5
-// for 50 interrupts per second: 7812 / 50 = 156.25
-// conut to: 256 - 156 = 100 -> set register to 0x64
 static uint8_t TMR0_INIT_VAL;
 
+// Example for initial counter value calcualtion:
+// max number of interrupts per second F_CPU/prescaler = 8000000/1024 = 7812.5
+// possible interrupts per second: 30.51 ... 7812.5
+// for 50 interrupts per second: 7812.5 / 50 = 156.25
+// conut to: 256 - 156 = 100 -> set register to 0x64
 void TIMERInit(uint8_t tmr0_init_val)
 {
     cli();
