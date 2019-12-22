@@ -11,5 +11,5 @@
 
 void TIMERInit();
 
-
+uint16_t TIMER0_interrupt_cnt;
 #endif /* TIMERS_H_ */
