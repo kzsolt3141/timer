@@ -1,2 +1,3 @@
-timer/Debug/
-timer/.vs/*
+.vscode
+*.bin
+*.hex

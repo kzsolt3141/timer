@@ -1,6 +1,3 @@
 [submodule "uart"]
 	path = uart
 	url = https://github.com/kzsolt3141/uart.git
-[submodule "m8_def"]
-	path = m8_def
-	url = https://github.com/kzsolt3141/m8_def.git
