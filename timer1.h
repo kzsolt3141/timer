@@ -5,7 +5,6 @@
  *  Author: Zsolt
  */ 
 
-
 #ifndef TIMER1_H_
 #define TIMER1_H_
 
@@ -21,7 +20,7 @@ void TIMER1Init(uint16_t tmr1_init_val);
 /**
  * Initialize Timer 1 for OC1A
  */
-void TIMER1CompareInit(uint16_t tmr1_init_val);
+void TIMER1CompareInit(uint16_t tmr1_cmpa_val);
 
-uint16_t TIMER1_interrupt_cnt;
+extern uint16_t TIMER1_interrupt_cnt;
 #endif /* TIMER1_H_ */

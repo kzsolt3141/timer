@@ -7,13 +7,14 @@
 
 #include "timer0.h"
 
-#include "avr/io.h"
-#include "avr/interrupt.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
 static uint8_t TMR0_INIT_VAL;
+uint16_t TIMER0_interrupt_cnt;
 
 // Example for initial counter value calcualtion:
-// max number of interrupts per second F_CPU/prescaler = 8000000/1024 = 7812.5
+// max number of interrupts per second F_CPU/prescaler = 8000000/1024 = 7812.5Hz
 // possible interrupts per second: 30.51 ... 7812.5
 // for 50 interrupts per second: 7812.5 / 50 = 156.25
 // conut to: 256 - 156 = 100 -> set register to 0x64
@@ -34,5 +35,3 @@ ISR(TIMER0_OVF_vect){
     TCNT0 = TMR0_INIT_VAL;
     TIMER0_interrupt_cnt++;
 }    
-
-

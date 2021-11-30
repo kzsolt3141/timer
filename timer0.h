@@ -5,7 +5,6 @@
  *  Author: Zsolt
  */ 
 
-
 #ifndef TIMER0_H_
 #define TIMER0_H_
 
@@ -21,5 +20,5 @@ void TIMER0Init(uint8_t tmr0_init_val);
 /**
  * Count interrupts
  */
-uint16_t TIMER0_interrupt_cnt;
+extern uint16_t TIMER0_interrupt_cnt;
 #endif /* TIMER0_H_ */

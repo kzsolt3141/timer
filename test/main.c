@@ -5,23 +5,25 @@
  * Author : Zsolt
  */ 
 
+#include <stdio.h>
 #include <avr/io.h>
+#include <util/delay.h>
+
 #include "uart.h"
 #include "timer0.h"
 #include "timer1.h"
-#include <util/delay.h>
 
 
 int main(void)
 {
     /* Replace with your application code */
     USARTInit();
-    TIMER0Init(0xB2);
-    TIMER1CompareInit(1728);
+    TIMER0Init(0x64);
+    // TIMER1Init(0xE17C);
+    TIMER1CompareInit(15625);
     while (1) 
     {
         printf("%d %d \n",TIMER0_interrupt_cnt, TIMER1_interrupt_cnt);
         _delay_ms(1000);
     }
 }
-
