@@ -19,8 +19,9 @@ int main(void)
     /* Replace with your application code */
     USARTInit();
     TIMER0Init(0x64);
-    // TIMER1Init(0xE17C);
-    TIMER1CompareInit(15625);
+    TIMER1Init(0xE17C);
+    // TIMER1CompareInit(15625);
+    TIMER1PWMInit();
     while (1) 
     {
         printf("%d %d \n",TIMER0_interrupt_cnt, TIMER1_interrupt_cnt);

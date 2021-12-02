@@ -13,7 +13,7 @@
 /**
  * Initialize Timer 0
  * @param[in] tmr0_init_val initialize timer counter register,
- * from this value will count up to 0xFF the will generate interurpt
+ * from this value will count up to 0xFF then will generate interurpt
  */
 void TIMER0Init(uint8_t tmr0_init_val);
 

@@ -12,6 +12,7 @@
 
 static uint16_t TMR1_INIT_VAL;
 uint16_t TIMER1_interrupt_cnt;
+static uint8_t width = 0;
 
 // Example for initial counter value calcualtion:
 // max number of interrupts per second F_CPU/prescaler = 8000000/1024 = 7812.5
@@ -51,10 +52,32 @@ void TIMER1CompareInit(uint16_t tmr1_cmpa_val){
     sei();
 }
 
+void TIMER1PWMInit(){
+    cli();
+    TCCR1A = (1 << COM1A1) | 
+             (0 << COM1A0) |   // toggle OC1A when match
+             (0 << WGM11)  |
+             (1 << WGM10);     // 8 bit fast PWM
+    TCCR1B = (1 << WGM12) |     // CTC mode (match, then reset counter)
+             (0 << WGM13) |
+             (1 << CS12) | 
+             (0 << CS11) |
+             (1 << CS10);   // set prescaler to 1024
+    OCR1A = width;
+    TIMSK |= (1 << TOIE1);    // overflow interrupt enable
+    DDRB |= 1 << PB1;          // set OC1A as output (on port PB1)
+
+    sei();
+}
+
 ISR(TIMER1_OVF_vect){
     TCNT1 = TMR1_INIT_VAL;   // reset manualy counter value
     TIMER1_interrupt_cnt++;
-}    
+}
+
+// ISR(TIMER1_OVF_vect) {
+//     OCR1A = width++;
+// }    
 
 ISR(TIMER1_COMPA_vect){  // if it is in CTC mode (WGM12 is set), TCNT1 is reset by default
     TIMER1_interrupt_cnt++;
