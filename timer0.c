@@ -7,11 +7,13 @@
 
 #include "timer0.h"
 
+#include <stddef.h>
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-static uint8_t TMR0_INIT_VAL;
-uint16_t TIMER0_interrupt_cnt;
+static TIMER0_OVF_cb TIMER0_cb = NULL;
+static void *TIMER0_cb_ctx = NULL;
 
 // Example for initial counter value calcualtion:
 // max number of interrupts per second F_CPU/prescaler = 8000000/1024 = 7812.5Hz
@@ -21,17 +23,26 @@ uint16_t TIMER0_interrupt_cnt;
 void TIMER0Init(uint8_t tmr0_init_val)
 {
     cli();
-    TMR0_INIT_VAL = tmr0_init_val;
-    TCNT0 = TMR0_INIT_VAL;
+    TCNT0 = tmr0_init_val;
     TCCR0 |= ((1 << CS02) | 
               (0 << CS01) |
               (1 << CS00)); // set prescaler to 1024
     TIMSK |= (1 << TOIE0);  // overflow interrupt enable
-    TIMER0_interrupt_cnt = 0;
     sei();
 }
 
+uint8_t regiter_TIMER0_OVF_cb(TIMER0_OVF_cb cb, void* ctx) {
+    if (cb) {
+        TIMER0_cb = cb;
+    } else {
+        return 1;
+    }
+
+    TIMER0_cb_ctx = ctx;
+
+    return 0;
+}
+
 ISR(TIMER0_OVF_vect){
-    TCNT0 = TMR0_INIT_VAL;
-    TIMER0_interrupt_cnt++;
+    TIMER0_cb(TIMER0_cb_ctx);
 }    
