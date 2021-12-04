@@ -11,6 +11,7 @@
 
 #include "uart.h"
 #include "timer0.h"
+#include "timer1.h"
 
 /**
  * USART RX interrupt callback handle context
@@ -33,18 +34,33 @@ static void USART_RXC_cb_handle(void* ctx) {
 }
 
 /**
- * TIMER interrupt callback handle context
+ * TIMER 0 interrupt callback handle context
  */
-struct Timer0_OVF_cb_ctx_t {
+struct Timer0_cb_ctx_t {
     uint8_t tmr0_init_val;
     int tmr0_int_cnt;
 };
 
 static void TIMER0_OVF_cb_handle(void* ctx) {
-    struct Timer0_OVF_cb_ctx_t* t_ctx = (struct Timer0_OVF_cb_ctx_t*)ctx;
+    struct Timer0_cb_ctx_t* t_ctx = (struct Timer0_cb_ctx_t*)ctx;
 
     TCNT0 = t_ctx->tmr0_init_val;
     t_ctx->tmr0_int_cnt++;
+}
+
+/**
+ * TIMER 1 interrupt callback handle context
+ */
+struct Timer1_cb_ctx_t {
+    uint16_t tmr1_init_val;
+    int tmr1_int_cnt;
+};
+
+static void TIMER1_OVF_cb_handle(void* ctx) {
+    struct Timer1_cb_ctx_t* t_ctx = (struct Timer1_cb_ctx_t*)ctx;
+
+    TCNT1 = t_ctx->tmr1_init_val;
+    t_ctx->tmr1_int_cnt++;
 }
 
 int main(void)
@@ -67,20 +83,29 @@ int main(void)
     // TIMER0 init
     //-------------------------------
     const uint8_t tmr0_init_val = 0x64;
-    struct Timer0_OVF_cb_ctx_t timer0_ctx = {0};
+    struct Timer0_cb_ctx_t timer0_ctx = {0};
     timer0_ctx.tmr0_init_val = tmr0_init_val;
 
-    TIMER0Init(tmr0_init_val);
+    TIMER0_init(tmr0_init_val);
 
-    regiter_TIMER0_OVF_cb(TIMER0_OVF_cb_handle, &timer0_ctx);
+    regiter_TIMER0_isr_cb(TIMER0_OVF_cb_handle, &timer0_ctx);
     //-------------------------------
 
-    // TIMER1Init(0xE17C);
+    // TIMER1 init
+    //-------------------------------
+    const uint16_t tmr1_init_val = 15625;
+    struct Timer1_cb_ctx_t timer1_ctx = {0};
+    timer1_ctx.tmr1_init_val = tmr1_init_val;
+
+    TIMER1_init(tmr1_init_val);
     // TIMER1CompareInit(15625);
     // TIMER1PWMInit();
 
+    regiter_TIMER1_isr_cb(TIMER1_OVF_cb_handle, &timer1_ctx);
+    //-------------------------------
+
     while (1) {
-        printf("%d \n", timer0_ctx.tmr0_int_cnt);
+        printf("T0:%d T1:%d\n", timer0_ctx.tmr0_int_cnt, timer1_ctx.tmr1_int_cnt);
         _delay_ms(1000);
     }
 }

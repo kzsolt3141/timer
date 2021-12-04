@@ -12,7 +12,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-static TIMER0_OVF_cb TIMER0_cb = NULL;
+static TIMER0_isr_cb TIMER0_cb = NULL;
 static void *TIMER0_cb_ctx = NULL;
 
 // Example for initial counter value calcualtion:
@@ -20,7 +20,7 @@ static void *TIMER0_cb_ctx = NULL;
 // possible interrupts per second: 30.51 ... 7812.5
 // for 50 interrupts per second: 7812.5 / 50 = 156.25
 // conut to: 256 - 156 = 100 -> set register to 0x64
-void TIMER0Init(uint8_t tmr0_init_val)
+void TIMER0_init(uint8_t tmr0_init_val)
 {
     cli();
     TCNT0 = tmr0_init_val;
@@ -31,7 +31,7 @@ void TIMER0Init(uint8_t tmr0_init_val)
     sei();
 }
 
-uint8_t regiter_TIMER0_OVF_cb(TIMER0_OVF_cb cb, void* ctx) {
+uint8_t regiter_TIMER0_isr_cb(TIMER0_isr_cb cb, void* ctx) {
     if (cb) {
         TIMER0_cb = cb;
     } else {
@@ -45,4 +45,4 @@ uint8_t regiter_TIMER0_OVF_cb(TIMER0_OVF_cb cb, void* ctx) {
 
 ISR(TIMER0_OVF_vect){
     TIMER0_cb(TIMER0_cb_ctx);
-}    
+}
