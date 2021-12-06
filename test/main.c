@@ -12,6 +12,7 @@
 #include "uart.h"
 #include "timer0.h"
 #include "timer1.h"
+#include "timer2.h"
 
 /**
  * USART RX interrupt callback handle context
@@ -77,6 +78,35 @@ static void TIMER1_PWM_SWEEP_cb_handle(void* ctx) {
 
 }
 
+/**
+ * TIMER 1 interrupt callback handle context
+ */
+struct Timer2_cb_ctx_t {
+    uint8_t tmr2_init_val;
+    int tmr2_int_cnt;
+};
+
+static void TIMER2_OVF_cb_handle(void* ctx) {
+    struct Timer2_cb_ctx_t* t_ctx = (struct Timer2_cb_ctx_t*)ctx;
+
+    TCNT2 = t_ctx->tmr2_init_val;
+    t_ctx->tmr2_int_cnt++;
+}
+
+// static void TIMER1_CMP_cb_handle(void* ctx) {
+//     struct Timer1_cb_ctx_t* t_ctx = (struct Timer1_cb_ctx_t*)ctx;
+
+//     t_ctx->tmr1_int_cnt++;
+// }
+
+// static void TIMER1_PWM_SWEEP_cb_handle(void* ctx) {
+//     struct Timer1_cb_ctx_t* t_ctx = (struct Timer1_cb_ctx_t*)ctx;
+
+//     t_ctx->tmr1_int_cnt++;
+//     OCR1A = t_ctx->tmr1_int_cnt;
+
+// }
+
 int main(void)
 {
     // UART INIT
@@ -120,8 +150,23 @@ int main(void)
     regiter_TIMER1_isr_cb(TIMER1_PWM_SWEEP_cb_handle, &timer1_ctx);
     //-------------------------------
 
+    // TIMER2 init
+    //-------------------------------
+    const uint8_t tmr2_init_val = 0x64;
+    struct Timer2_cb_ctx_t timer2_ctx = {0};
+    timer2_ctx.tmr2_init_val = tmr2_init_val;
+
+    TIMER2_init(tmr2_init_val, TIMER2_PS_PRESCALE_1024);
+    // TIMER2_compare_init(tmr1_init_val, TIMER1_PS_PRESCALE_1024);
+    // TIMER2_PWM_init(0, TIMER1_PS_PRESCALE_256);
+
+    regiter_TIMER2_isr_cb(TIMER2_OVF_cb_handle, &timer2_ctx);
+    // regiter_TIMER1_isr_cb(TIMER1_CMP_cb_handle, &timer1_ctx);
+    // regiter_TIMER1_isr_cb(TIMER1_PWM_SWEEP_cb_handle, &timer1_ctx);
+    //-------------------------------
+
     while (1) {
-        printf("T0:%d T1:%d\n", timer0_ctx.tmr0_int_cnt, timer1_ctx.tmr1_int_cnt);
+        printf("T0:%d T1:%d T2:%d\n", timer0_ctx.tmr0_int_cnt, timer1_ctx.tmr1_int_cnt, timer2_ctx.tmr2_int_cnt);
         _delay_ms(1000);
     }
 }
