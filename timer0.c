@@ -20,13 +20,11 @@ static void *TIMER0_cb_ctx = NULL;
 // possible interrupts per second: 30.51 ... 7812.5
 // for 50 interrupts per second: 7812.5 / 50 = 156.25
 // conut to: 256 - 156 = 100 -> set register to 0x64
-void TIMER0_init(uint8_t tmr0_init_val)
+void TIMER0_init(uint8_t tmr0_init_val, enum TIMER0_clock_source clk_src)
 {
     cli();
     TCNT0 = tmr0_init_val;
-    TCCR0 |= ((1 << CS02) | 
-              (0 << CS01) |
-              (1 << CS00)); // set prescaler to 1024
+    TCCR0 = clk_src;
     TIMSK |= (1 << TOIE0);  // overflow interrupt enable
     sei();
 }

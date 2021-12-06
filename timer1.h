@@ -10,24 +10,35 @@
 
 #include <stdint.h>
 
+enum TIMER1_clock_source {
+    TIMER1_PS_DISABLE_CLK   = 0,
+    TIMER1_PS_PRESCALE_1,
+    TIMER1_PS_PRESCALE_8,
+    TIMER1_PS_PRESCALE_64,
+    TIMER1_PS_PRESCALE_256,
+    TIMER1_PS_PRESCALE_1024,
+    TIMER1_PS_SOURCE_T1_FALLING,
+    TIMER1_PS_SOURCE_T1_RISING
+};
+
 /**
  * Initialize Timer 1 for ovwerflow interrupt
  * @param[in] tmr0_init_val initialize timer counter register,
  * from this value will count up to 0xFFFF then will generate interurpt in normal mode
  */
-void TIMER1_init(uint16_t tmr1_init_val);
+void TIMER1_init(uint16_t tmr1_init_val, enum TIMER1_clock_source clk_src);
 
 /**
  * Initialize Timer 1 for CTC on OC1A
  * @param[in] tmr1_cmpa_val initialize timer comparator register,
  * when timer reaches this value, it will generate TIMER1_COMPA interrupt
  */
-void TIMER1_compare_init(uint16_t tmr1_cmpa_val);
+void TIMER1_compare_init(uint16_t tmr1_cmpa_val, enum TIMER1_clock_source clk_src);
 
 /**
  * Initialize Timer 1 for fast PWM 8 bit
  */
-void TIMER1_PWM_init();
+void TIMER1_PWM_init(uint16_t tmr1_cmpa_val, enum TIMER1_clock_source clk_src);
 
 /**
  * Timer 1 interrupt callback type

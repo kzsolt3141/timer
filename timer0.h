@@ -10,12 +10,23 @@
 
 #include <stdint.h>
 
+enum TIMER0_clock_source {
+    TIMER0_PS_DISABLE_CLK   = 0,
+    TIMER0_PS_PRESCALE_1,
+    TIMER0_PS_PRESCALE_8,
+    TIMER0_PS_PRESCALE_64,
+    TIMER0_PS_PRESCALE_256,
+    TIMER0_PS_PRESCALE_1024,
+    TIMER0_PS_SOURCE_T1_FALLING,
+    TIMER0_PS_SOURCE_T1_RISING
+};
+
 /**
  * Initialize Timer 0
  * @param[in] tmr0_init_val initialize timer counter register,
  * from this value will count up to 0xFF then will generate interurpt
  */
-void TIMER0_init(uint8_t tmr0_init_val);
+void TIMER0_init(uint8_t tmr0_init_val, enum TIMER0_clock_source clk_src);
 
 /**
  * Timer 0 interrupt callback type

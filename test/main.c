@@ -56,11 +56,25 @@ struct Timer1_cb_ctx_t {
     int tmr1_int_cnt;
 };
 
-static void TIMER1_OVF_cb_handle(void* ctx) {
+// static void TIMER1_OVF_cb_handle(void* ctx) {
+//     struct Timer1_cb_ctx_t* t_ctx = (struct Timer1_cb_ctx_t*)ctx;
+
+//     TCNT1 = t_ctx->tmr1_init_val;
+//     t_ctx->tmr1_int_cnt++;
+// }
+
+// static void TIMER1_CMP_cb_handle(void* ctx) {
+//     struct Timer1_cb_ctx_t* t_ctx = (struct Timer1_cb_ctx_t*)ctx;
+
+//     t_ctx->tmr1_int_cnt++;
+// }
+
+static void TIMER1_PWM_SWEEP_cb_handle(void* ctx) {
     struct Timer1_cb_ctx_t* t_ctx = (struct Timer1_cb_ctx_t*)ctx;
 
-    TCNT1 = t_ctx->tmr1_init_val;
     t_ctx->tmr1_int_cnt++;
+    OCR1A = t_ctx->tmr1_int_cnt;
+
 }
 
 int main(void)
@@ -86,7 +100,7 @@ int main(void)
     struct Timer0_cb_ctx_t timer0_ctx = {0};
     timer0_ctx.tmr0_init_val = tmr0_init_val;
 
-    TIMER0_init(tmr0_init_val);
+    TIMER0_init(tmr0_init_val, TIMER0_PS_PRESCALE_1024);
 
     regiter_TIMER0_isr_cb(TIMER0_OVF_cb_handle, &timer0_ctx);
     //-------------------------------
@@ -97,11 +111,13 @@ int main(void)
     struct Timer1_cb_ctx_t timer1_ctx = {0};
     timer1_ctx.tmr1_init_val = tmr1_init_val;
 
-    TIMER1_init(tmr1_init_val);
-    // TIMER1CompareInit(15625);
-    // TIMER1PWMInit();
+    // TIMER1_init(tmr1_init_val, TIMER1_PS_PRESCALE_1024);
+    // TIMER1_compare_init(tmr1_init_val, TIMER1_PS_PRESCALE_1024);
+    TIMER1_PWM_init(0, TIMER1_PS_PRESCALE_256);
 
-    regiter_TIMER1_isr_cb(TIMER1_OVF_cb_handle, &timer1_ctx);
+    // regiter_TIMER1_isr_cb(TIMER1_OVF_cb_handle, &timer1_ctx);
+    // regiter_TIMER1_isr_cb(TIMER1_CMP_cb_handle, &timer1_ctx);
+    regiter_TIMER1_isr_cb(TIMER1_PWM_SWEEP_cb_handle, &timer1_ctx);
     //-------------------------------
 
     while (1) {
