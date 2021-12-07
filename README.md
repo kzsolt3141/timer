@@ -1,3 +1,8 @@
+1.0.2 (2021.12.07)
+---------------------
+Add API for Timer0, Timer1 and Timer2.
+Add CTC and PWM supoprt with API
+
 1.0.1 (2021.11.30)
 ---------------------
 Remove Atmel dependencies
