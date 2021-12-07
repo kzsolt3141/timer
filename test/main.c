@@ -86,34 +86,35 @@ struct Timer2_cb_ctx_t {
     int tmr2_int_cnt;
 };
 
-static void TIMER2_OVF_cb_handle(void* ctx) {
+// static void TIMER2_OVF_cb_handle(void* ctx) {
+//     struct Timer2_cb_ctx_t* t_ctx = (struct Timer2_cb_ctx_t*)ctx;
+
+//     TCNT2 = t_ctx->tmr2_init_val;
+//     t_ctx->tmr2_int_cnt++;
+// }
+
+// static void TIMER2_CMP_cb_handle(void* ctx) {
+//     struct Timer2_cb_ctx_t* t_ctx = (struct Timer2_cb_ctx_t*)ctx;
+
+//     t_ctx->tmr2_int_cnt++;
+// }
+
+static void TIMER2_PWM_SWEEP_cb_handle(void* ctx) {
     struct Timer2_cb_ctx_t* t_ctx = (struct Timer2_cb_ctx_t*)ctx;
 
-    TCNT2 = t_ctx->tmr2_init_val;
     t_ctx->tmr2_int_cnt++;
+    OCR2 = t_ctx->tmr2_int_cnt;
+
 }
-
-// static void TIMER1_CMP_cb_handle(void* ctx) {
-//     struct Timer1_cb_ctx_t* t_ctx = (struct Timer1_cb_ctx_t*)ctx;
-
-//     t_ctx->tmr1_int_cnt++;
-// }
-
-// static void TIMER1_PWM_SWEEP_cb_handle(void* ctx) {
-//     struct Timer1_cb_ctx_t* t_ctx = (struct Timer1_cb_ctx_t*)ctx;
-
-//     t_ctx->tmr1_int_cnt++;
-//     OCR1A = t_ctx->tmr1_int_cnt;
-
-// }
 
 int main(void)
 {
+    uint8_t sts = 0;
+
     // UART INIT
     //-------------------------------
     const uint16_t baud_rate = 38400;
 
-    uint8_t sts = 0;
     struct USART_RXC_cb_ctx_t USART_RXC_ctx = {};
 
     USART_init(baud_rate);
@@ -127,12 +128,16 @@ int main(void)
     // TIMER0 init
     //-------------------------------
     const uint8_t tmr0_init_val = 0x64;
+    const uint8_t isr_en = 1;
     struct Timer0_cb_ctx_t timer0_ctx = {0};
     timer0_ctx.tmr0_init_val = tmr0_init_val;
 
-    TIMER0_init(tmr0_init_val, TIMER0_PS_PRESCALE_1024);
-
     regiter_TIMER0_isr_cb(TIMER0_OVF_cb_handle, &timer0_ctx);
+
+    sts = TIMER0_init(tmr0_init_val, TIMER0_PS_PRESCALE_1024, isr_en);
+    if (sts) return sts;
+
+    printf("Init Done TIMER0\n");
     //-------------------------------
 
     // TIMER1 init
@@ -141,28 +146,34 @@ int main(void)
     struct Timer1_cb_ctx_t timer1_ctx = {0};
     timer1_ctx.tmr1_init_val = tmr1_init_val;
 
-    // TIMER1_init(tmr1_init_val, TIMER1_PS_PRESCALE_1024);
-    // TIMER1_compare_init(tmr1_init_val, TIMER1_PS_PRESCALE_1024);
-    TIMER1_PWM_init(0, TIMER1_PS_PRESCALE_256);
-
     // regiter_TIMER1_isr_cb(TIMER1_OVF_cb_handle, &timer1_ctx);
     // regiter_TIMER1_isr_cb(TIMER1_CMP_cb_handle, &timer1_ctx);
     regiter_TIMER1_isr_cb(TIMER1_PWM_SWEEP_cb_handle, &timer1_ctx);
+
+    // TIMER1_init(tmr1_init_val, TIMER1_PS_PRESCALE_1024);
+    // TIMER1_compare_init(tmr1_init_val, TIMER1_PS_PRESCALE_1024);
+    sts = TIMER1_PWM_init(0, TIMER1_PS_PRESCALE_256, isr_en);
+    if (sts) return sts;
+
+    printf("Init Done TIMER1\n");
     //-------------------------------
 
     // TIMER2 init
     //-------------------------------
-    const uint8_t tmr2_init_val = 0x64;
+    const uint8_t tmr2_init_val = 0xFF;
     struct Timer2_cb_ctx_t timer2_ctx = {0};
     timer2_ctx.tmr2_init_val = tmr2_init_val;
 
-    TIMER2_init(tmr2_init_val, TIMER2_PS_PRESCALE_1024);
-    // TIMER2_compare_init(tmr1_init_val, TIMER1_PS_PRESCALE_1024);
-    // TIMER2_PWM_init(0, TIMER1_PS_PRESCALE_256);
+    // regiter_TIMER2_isr_cb(TIMER2_OVF_cb_handle, &timer2_ctx);
+    // regiter_TIMER2_isr_cb(TIMER2_CMP_cb_handle, &timer2_ctx);
+    regiter_TIMER2_isr_cb(TIMER2_PWM_SWEEP_cb_handle, &timer2_ctx);
 
-    regiter_TIMER2_isr_cb(TIMER2_OVF_cb_handle, &timer2_ctx);
-    // regiter_TIMER1_isr_cb(TIMER1_CMP_cb_handle, &timer1_ctx);
-    // regiter_TIMER1_isr_cb(TIMER1_PWM_SWEEP_cb_handle, &timer1_ctx);
+    // TIMER2_init(tmr2_init_val, TIMER2_PS_PRESCALE_1024);
+    // TIMER2_compare_init(tmr2_init_val, TIMER2_PS_PRESCALE_1024);
+    sts = TIMER2_PWM_init(0, TIMER2_PS_PRESCALE_256, isr_en);
+    if (sts) return sts;
+
+    printf("Init Done TIMER2\n");
     //-------------------------------
 
     while (1) {
