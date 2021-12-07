@@ -117,9 +117,9 @@ int main(void)
 
     struct USART_RXC_cb_ctx_t USART_RXC_ctx = {};
 
-    USART_init(baud_rate);
+    regiter_USART_RXC_cb(USART_RXC_cb_handle, &USART_RXC_ctx);
 
-    sts = regiter_USART_RXC_cb(USART_RXC_cb_handle, &USART_RXC_ctx);
+    sts = USART_init(baud_rate, 1);
     if (sts) return sts;
 
     printf("Init Done UART baud: %u\n", (uint16_t)baud_rate);
@@ -170,7 +170,7 @@ int main(void)
 
     // TIMER2_init(tmr2_init_val, TIMER2_PS_PRESCALE_1024);
     // TIMER2_compare_init(tmr2_init_val, TIMER2_PS_PRESCALE_1024);
-    sts = TIMER2_PWM_init(0, TIMER2_PS_PRESCALE_256, isr_en);
+    sts = TIMER2_PWM_init(0, TIMER2_PS_PRESCALE_128, isr_en);
     if (sts) return sts;
 
     printf("Init Done TIMER2\n");
