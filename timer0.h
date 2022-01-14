@@ -38,14 +38,11 @@ void regiter_TIMER0_isr_cb(TIMER0_isr_cb cb, void* ctx);
 
 /**
  * Initialize Timer 0
+ * ISR callback must be registered before init is called
  * @param[in] tmr_init_val  initialize timer counter register,
  *                          from this value will count up to 0xFF then will generate interurpt
- * @param[in] clk_src       select clock prescaler, see TIMER0_clock_source,
- * @param[in] isr_en        enable ISR,
- *                          ISR callback must be registered before init is called
-* @return 0 for success
- *         other in case of fail
+ * @param[in] clk_src       select clock prescaler, see TIMER0_clock_source
  */
-uint8_t TIMER0_init(uint8_t tmr_init_val, enum TIMER0_clock_source clk_src, uint8_t isr_en);
+void TIMER0_init(uint8_t tmr_init_val, enum TIMER0_clock_source clk_src);
 
 #endif /* TIMER0_H_ */

@@ -109,8 +109,6 @@ static void TIMER2_PWM_SWEEP_cb_handle(void* ctx) {
 
 int main(void)
 {
-    uint8_t sts = 0;
-
     // UART INIT
     //-------------------------------
     const uint16_t baud_rate = 38400;
@@ -119,8 +117,7 @@ int main(void)
 
     regiter_USART_RXC_cb(USART_RXC_cb_handle, &USART_RXC_ctx);
 
-    sts = USART_init(baud_rate, 1);
-    if (sts) return sts;
+    USART_init(baud_rate);
 
     printf("Init Done UART baud: %u\n", (uint16_t)baud_rate);
     //-------------------------------
@@ -128,14 +125,12 @@ int main(void)
     // TIMER0 init
     //-------------------------------
     const uint8_t tmr0_init_val = 0x64;
-    const uint8_t isr_en = 1;
     struct Timer0_cb_ctx_t timer0_ctx = {0};
     timer0_ctx.tmr0_init_val = tmr0_init_val;
 
     regiter_TIMER0_isr_cb(TIMER0_OVF_cb_handle, &timer0_ctx);
 
-    sts = TIMER0_init(tmr0_init_val, TIMER0_PS_PRESCALE_1024, isr_en);
-    if (sts) return sts;
+    TIMER0_init(tmr0_init_val, TIMER0_PS_PRESCALE_1024);
 
     printf("Init Done TIMER0\n");
     //-------------------------------
@@ -152,8 +147,7 @@ int main(void)
 
     // TIMER1_init(tmr1_init_val, TIMER1_PS_PRESCALE_1024);
     // TIMER1_compare_init(tmr1_init_val, TIMER1_PS_PRESCALE_1024);
-    sts = TIMER1_PWM_init(0, TIMER1_PS_PRESCALE_256, isr_en);
-    if (sts) return sts;
+    TIMER1_PWM_init(0, TIMER1_PS_PRESCALE_256);
 
     printf("Init Done TIMER1\n");
     //-------------------------------
@@ -170,8 +164,7 @@ int main(void)
 
     // TIMER2_init(tmr2_init_val, TIMER2_PS_PRESCALE_1024);
     // TIMER2_compare_init(tmr2_init_val, TIMER2_PS_PRESCALE_1024);
-    sts = TIMER2_PWM_init(0, TIMER2_PS_PRESCALE_128, isr_en);
-    if (sts) return sts;
+    TIMER2_PWM_init(0, TIMER2_PS_PRESCALE_128);
 
     printf("Init Done TIMER2\n");
     //-------------------------------

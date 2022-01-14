@@ -12,36 +12,32 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-static TIMER1_isr_cb  TIMER1_cb     = NULL;
-static void          *TIMER1_cb_ctx = NULL;
-static uint8_t        isr_set_      = 0;
+static TIMER1_isr_cb  TIMER1_cb_     = NULL;
+static void          *TIMER1_cb_ctx_ = NULL;
 
 // Example for initial counter value calcualtion:
 // max number of interrupts per second F_CPU/prescaler = 8000000/1024 = 7812.5
 // possible interrupts per second: 0.1192 ... 7812.5
 // for 1 interrupt per second: 7812.5 / 1 = 7812
 // conut to: 65536 - 7812 = 57724 -> set register to 0xE17C
-uint8_t TIMER1_init(uint16_t tmr1_init_val, enum TIMER1_clock_source clk_src, uint8_t isr_en) {
+void TIMER1_init(uint16_t tmr1_init_val, enum TIMER1_clock_source clk_src) {
     cli();
 
     TCNT1  = tmr1_init_val;     // counter intialization
     TCCR1B = clk_src;
 
-    if (isr_en) {
-        if (!isr_set_) return 1;
+    if (TIMER1_cb_) {
         TIMSK |= (1 << TOIE1);  // overflow interrupt enable
     }
 
     sei();
-
-    return 0;
 }
 
 // Example for initial counter value calcualtion for CTC mode:
 // max number of interrupts per second F_CPU/prescaler = 8000000/1024 = 7812.5
 // for 2 interrupts per second: 7812.5 * 2 = 15625
 // In CTC mode, when TCNT1 reaches 15625 interrupt is generated and counter is cleared.
-uint8_t TIMER1_compare_init(uint16_t tmr1_cmpa_val, enum TIMER1_clock_source clk_src, uint8_t isr_en) {
+void TIMER1_compare_init(uint16_t tmr1_cmpa_val, enum TIMER1_clock_source clk_src) {
     cli();
 
     TCNT1  = 0;                 // counter intialization
@@ -52,17 +48,14 @@ uint8_t TIMER1_compare_init(uint16_t tmr1_cmpa_val, enum TIMER1_clock_source clk
     TCCR1B = (1 << WGM12)|   // CTC mode (match, then reset counter)
               clk_src;
 
-    if (isr_en) {
-        if (!isr_set_) return 1;
+    if (TIMER1_cb_) {
         TIMSK |= (1 << OCIE1A);    // match with OCR1A interrupt enable
     }
 
     sei();
-
-    return 0;
 }
 
-uint8_t TIMER1_PWM_init(uint16_t tmr1_cmpa_val, enum TIMER1_clock_source clk_src, uint8_t isr_en) {
+void TIMER1_PWM_init(uint16_t tmr1_cmpa_val, enum TIMER1_clock_source clk_src) {
     cli();
 
     TCCR1A = (1 << COM1A1) | 
@@ -75,31 +68,22 @@ uint8_t TIMER1_PWM_init(uint16_t tmr1_cmpa_val, enum TIMER1_clock_source clk_src
     DDRB |= 1 << PB1;          // set OC1A as output (on port PB1)
     OCR1A = tmr1_cmpa_val;
 
-    if (isr_en) {
-        if (!isr_set_) return 1;
+    if (TIMER1_cb_) {
         TIMSK |= (1 << TOIE1);    // overflow interrupt enable
     }
 
     sei();
-
-    return 0;
 }
 
 void regiter_TIMER1_isr_cb(TIMER1_isr_cb cb, void* ctx) {
-    if (cb) {
-        TIMER1_cb = cb;
-    } else {
-        return;
-    }
-
-    TIMER1_cb_ctx = ctx;
-    isr_set_ = 1;
+    TIMER1_cb_ = cb;
+    TIMER1_cb_ctx_ = ctx;
 }
 
 ISR(TIMER1_OVF_vect) {
-    TIMER1_cb(TIMER1_cb_ctx);
+    TIMER1_cb_(TIMER1_cb_ctx_);
 }
 
 ISR(TIMER1_COMPA_vect) {  // if it is in CTC mode (WGM12 is set), TCNT1 is reset by default
-    TIMER1_cb(TIMER1_cb_ctx);
+    TIMER1_cb_(TIMER1_cb_ctx_);
 }

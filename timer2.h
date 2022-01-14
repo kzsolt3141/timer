@@ -37,38 +37,29 @@ void regiter_TIMER2_isr_cb(TIMER2_isr_cb cb, void* ctx);
 
 /**
  * Initialize Timer 2
+ * ISR callback must be registered before init is called
  * @param[in] tmr_init_val  initialize timer counter register,
  *                          from this value will count up to 0xFF then will generate interurpt
- * @param[in] clk_src       select clock prescaler, see TIMER2_clock_source,
- * @param[in] isr_en        enable ISR,
- *                          ISR callback must be registered before init is called
- * @return 0 for success
- *         other in case of fail
+ * @param[in] clk_src       select clock prescaler, see TIMER2_clock_source
  */
-uint8_t TIMER2_init(uint8_t tmr_init_val, enum TIMER2_clock_source clk_src, uint8_t isr_en);
+void TIMER2_init(uint8_t tmr_init_val, enum TIMER2_clock_source clk_src);
 
 /**
  * Initialize Timer 2 for CTC on OC2
+ * ISR callback must be registered before init is called
  * @param[in] tmr_cmp_val  initialize timer compare register,
  *                         when timer reaches this value, it will generate TIMER1_COMPA interrupt
- * @param[in] clk_src      select clock prescaler, see TIMER2_clock_source,
- * @param[in] isr_en       enable ISR,
- *                         ISR callback must be registered before init is called
- * @return 0 for success
- *         other in case of fail
+ * @param[in] clk_src      select clock prescaler, see TIMER2_clock_source
  */
-uint8_t TIMER2_compare_init(uint8_t tmr_cmpa_val, enum TIMER2_clock_source clk_src, uint8_t isr_en);
+void TIMER2_compare_init(uint8_t tmr_cmpa_val, enum TIMER2_clock_source clk_src);
 
 /**
  * Initialize Timer 2 for fast PWM 8 bit
+ * ISR callback must be registered before init is called
  * @param[in] tmr_cmp_val  initialize timer compare register,
  *                         when timer reaches this value, it will generate TIMER1_COMPA interrupt
- * @param[in] clk_src      select clock prescaler, see TIMER2_clock_source,
- * @param[in] isr_en       enable ISR,
- *                         ISR callback must be registered before init is called
- * @return 0 for success
- *         other in case of fail
+ * @param[in] clk_src      select clock prescaler, see TIMER2_clock_source
  */
-uint8_t TIMER2_PWM_init(uint8_t tmr_cmpa_val, enum TIMER2_clock_source clk_src, uint8_t isr_en);
+void TIMER2_PWM_init(uint8_t tmr_cmpa_val, enum TIMER2_clock_source clk_src);
 
 #endif /* TIMER2_H_ */
