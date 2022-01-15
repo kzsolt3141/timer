@@ -34,6 +34,10 @@ void TIMER0_init(uint8_t tmr0_init_val, enum TIMER0_clock_source clk_src)
     sei();
 }
 
+void Timer0_restart () {
+    TCCR0 = 0;
+}
+
 void regiter_TIMER0_isr_cb(TIMER0_isr_cb cb, void* ctx) {
     TIMER0_cb_ = cb;
     TIMER0_cb_ctx_ = ctx;

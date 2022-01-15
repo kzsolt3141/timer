@@ -45,4 +45,9 @@ void regiter_TIMER0_isr_cb(TIMER0_isr_cb cb, void* ctx);
  */
 void TIMER0_init(uint8_t tmr_init_val, enum TIMER0_clock_source clk_src);
 
+/**
+ * Restart Timer 0, set counter to 0
+ */
+void Timer0_restart ();
+
 #endif /* TIMER0_H_ */
