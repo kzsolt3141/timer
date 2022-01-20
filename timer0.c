@@ -14,18 +14,16 @@
 
 static TIMER0_isr_cb  TIMER0_cb_     = NULL;
 static void          *TIMER0_cb_ctx_ = NULL;
+static TIMER0_clock_source TIMER0_clock_source_ = TIMER0_PS_DISABLE_CLK;
 
-// Example for initial counter value calcualtion:
-// max number of interrupts per second F_CPU/prescaler = 8000000/1024 = 7812.5Hz
-// possible interrupts per second: 30.51 ... 7812.5
-// for 50 interrupts per second: 7812.5 / 50 = 156.25
-// conut to: 256 - 156 = 100 -> set register to 0x64
-void TIMER0_init(uint8_t tmr0_init_val, enum TIMER0_clock_source clk_src)
+void TIMER0_init(TIMER0_clock_source clk_src)
 {
     cli();
 
-    TCNT0 = tmr0_init_val;
-    TCCR0 = clk_src;
+    TCNT0 = 0;
+    TCCR0 = TIMER0_PS_DISABLE_CLK;
+
+    TIMER0_clock_source_ = clk_src;
 
     if (TIMER0_cb_) {
         TIMSK |= (1 << TOIE0);  // overflow interrupt enable
@@ -34,8 +32,17 @@ void TIMER0_init(uint8_t tmr0_init_val, enum TIMER0_clock_source clk_src)
     sei();
 }
 
-void Timer0_restart () {
-    TCCR0 = 0;
+void TIMER0_start () {
+    TCCR0 = TIMER0_clock_source_;
+}
+
+uint8_t TIMER0_stop () {
+    TCCR0 = TIMER0_PS_DISABLE_CLK;
+    return TCNT0;
+}
+
+void TIMER0_reset () {
+    TCNT0 = 0;
 }
 
 void regiter_TIMER0_isr_cb(TIMER0_isr_cb cb, void* ctx) {

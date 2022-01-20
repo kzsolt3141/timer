@@ -38,14 +38,12 @@ static void USART_RXC_cb_handle(void* ctx) {
  * TIMER 0 interrupt callback handle context
  */
 struct Timer0_cb_ctx_t {
-    uint8_t tmr0_init_val;
     int tmr0_int_cnt;
 };
 
 static void TIMER0_OVF_cb_handle(void* ctx) {
     struct Timer0_cb_ctx_t* t_ctx = (struct Timer0_cb_ctx_t*)ctx;
 
-    TCNT0 = t_ctx->tmr0_init_val;
     t_ctx->tmr0_int_cnt++;
 }
 
@@ -124,13 +122,11 @@ int main(void)
 
     // TIMER0 init
     //-------------------------------
-    const uint8_t tmr0_init_val = 0x64;
     struct Timer0_cb_ctx_t timer0_ctx = {0};
-    timer0_ctx.tmr0_init_val = tmr0_init_val;
 
     regiter_TIMER0_isr_cb(TIMER0_OVF_cb_handle, &timer0_ctx);
 
-    TIMER0_init(tmr0_init_val, TIMER0_PS_PRESCALE_1024);
+    TIMER0_init(TIMER0_PS_PRESCALE_1024);
 
     printf("Init Done TIMER0\n");
     //-------------------------------
@@ -170,7 +166,13 @@ int main(void)
     //-------------------------------
 
     while (1) {
-        printf("T0:%d T1:%d T2:%d\n", timer0_ctx.tmr0_int_cnt, timer1_ctx.tmr1_int_cnt, timer2_ctx.tmr2_int_cnt);
-        _delay_ms(1000);
+        timer0_ctx.tmr0_int_cnt = 0;
+        TIMER0_start();
+        _delay_ms(10);
+        const uint8_t t0_cnt = TIMER0_stop();
+        TIMER0_reset();
+
+        printf("T0 ovf:%d cnt%d; T1:%d; T2:%d\n", timer0_ctx.tmr0_int_cnt, t0_cnt, timer1_ctx.tmr1_int_cnt, timer2_ctx.tmr2_int_cnt);
+
     }
 }
